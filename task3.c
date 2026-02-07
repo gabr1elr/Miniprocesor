@@ -1,83 +1,112 @@
 #include <stdio.h>
-#include "math.h"
+#include <stdlib.h>
 
-unsigned int getBits(unsigned int nr, int k, int pos) {
-    return (((1 << k) - 1) & (nr >> (pos-1)));
+unsigned int getbits(int nr, int k, int pos)
+{
+    return (((1 << k) - 1) & (nr >> pos));
 }
 
-int main() {
-    unsigned int inst = 0;
+int main()
+{
+    unsigned int inst, N, Dim;
     scanf("%u", &inst);
-    unsigned int N = getBits(inst, 3, 30) + 1;
-    // printf("%d ", N); // task1
+    N=getbits(inst, 3, 29) + 1;
+    printf("%u ", N);
+    int poz=27;
 
-    unsigned int operatii = getBits(inst, 2*N, 30-2*N);
-    char op[16];
-    int op_k = 0;
+    unsigned int op[8];
 
-    for (int i = N-1; i >= 0; i--) {
-        unsigned int tmp_operator = getBits(operatii, 2, 1+op_k);
-        if (tmp_operator == 0)
-            op[i] = '+';
-        else if (tmp_operator == 1)
-            op[i] = '-';
-        else if (tmp_operator == 2)
-            op[i] = '*';
-        else if (tmp_operator == 3)
-            op[i] = '/';
-        op_k += 2;
-    }
-
-    // for (int i=0; i<op_k/2; i++) printf("%c ", op[i]); //task1
-
-    unsigned int dim = getBits(inst, 4, 26-2*N) + 1;
-    // printf("%u ", dim); // task1
-
-    int numere = ((N+1) * dim) / 16;
-    if (((N + 1) * dim) % 16 != 0) numere++;
-
-    int v[128] = {0}, step = 0;
-    for (int i = 0; i < numere; i++) {
-        unsigned short int val;
-        scanf("%hu", &val);
-
-        for (int j = 16+step-1; val > 0; j--) {
-            v[j] = val % 2;
-            val /= 2;
+    for(int i=0; i<N; i++)
+    {
+        op[i] = getbits(inst, 2, poz);
+        switch(op[i])
+        {
+        case 0:
+            printf("+ ");
+            break;
+        case 1:
+            printf("- ");
+            break;
+        case 2:
+            printf("* ");
+            break;
+        case 3:
+            printf("/ ");
+            break;
+        default:
         }
-        step += 16;
+        poz-=2;
     }
+    poz+=2;//ma intorc la val de la ultima rulare
+    Dim = getbits(inst, 4, poz-4) + 1;
+    printf("%u \n", Dim);
+    int nrop=((N+1)*Dim)/16;
+    if(((N+1)*Dim)%16!=0)
+        nrop++;
+    printf("Numere de introdus = %d \nIntroduceti numar: ",nrop);
+    unsigned short x[nrop];
+    for(int i=0; i<nrop; i++)
+        scanf("%hu",&x[i]);
+    int j=0,pozitie1,formeznr=0,nrbiti=0;
+    printf("Operanzii: ");//nr test task3 352321536
+    unsigned int v[N+1];
+    for(int i=0; i<nrop; i++)
+    {
+        pozitie1=15;
+        while(j<N+1)
+        {
+            int tmp=(int)(x[i]);
+            if(formeznr!=0)//formeznr contine ramasitele de pe numarul precedent si nrbiti cati biti are acesta
+            {
+                int nevoiebiti=Dim-nrbiti,temporar;
+                temporar=(tmp>>(15-nrbiti));
+                formeznr=formeznr<<nevoiebiti;
+                v[j]=formeznr|temporar;
+                printf("%u ",v[j]);
+                j++;
+                pozitie1=15-nevoiebiti;
+                formeznr=nrbiti=0;
+            }
+            else{
+                pozitie1=pozitie1-Dim;
+                if(pozitie1<0)//nu mai am de unde sa tai din acest numar
+                {
+                    pozitie1=pozitie1+Dim;
+                    int mask=(1<<(pozitie1+1))-1;
+                    formeznr=tmp&mask;
+                    nrbiti=pozitie1+1;
+                    pozitie1=15,i++;//trec pe urmatorul numar x[i]
+                }
+                else{
+                    v[j]=getbits(tmp,Dim,pozitie1+1);
+                    printf("%u ",v[j]);
+                    j++;
 
-    int nr = 0, p = dim - 1, f[16] = {0};
-    for (int i=0; i < dim; i++) {
-        nr += v[i] * pow(2, p);
-        p--;
-    }
-    f[0] = nr;
-    int rez = nr, counter = 1;
-
-    for (int i = dim; i <= 16*N; i += dim) {
-        nr = 0, p = dim - 1;
-        for (int j = i; j < i+dim; j++) {
-            nr += v[j] * pow(2, p);
-            p--;
+                }
+            }
         }
-        f[counter] = nr;
-        counter++;
-    }
 
-    for (int i = 1; i < counter; i++) {
-        if (op[i-1] == '+')
-            rez += f[i];
-        else if (op[i-1] == '-')
-            rez -= f[i];
-        else if (op[i-1] == '*')
-            rez *= f[i];
-        else if (op[i-1] == '/' && f[i] != 0)
-            rez /= f[i];
     }
-
-    printf("%d", rez);
-    printf("\n");
+    unsigned int rezultat=v[0];
+    for(int i=0; i<N; i++)
+    {
+        switch(op[i])
+        {
+        case 0:
+            rezultat=rezultat+v[i+1];
+            break;
+        case 1:
+            rezultat=rezultat-v[i+1];
+            break;
+        case 2:
+            rezultat=rezultat*v[i+1];
+            break;
+        case 3:
+            rezultat=rezultat/v[i+1];
+            break;
+        default:
+        }
+    }
+    printf("\nRezultatul este %u",rezultat);
     return 0;
 }
