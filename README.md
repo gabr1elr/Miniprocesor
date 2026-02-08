@@ -1,4 +1,4 @@
-Mini Processor – Bit-Level Instruction Interpreter
+Mini Processor - Bit-Level Instruction Interpreter
 
 This project implements a simplified processor that operates directly on bit-encoded instructions. The goal is to decode and execute a compact binary instruction format, simulating how a basic processor separates instructions from data and performs arithmetic operations.
 
