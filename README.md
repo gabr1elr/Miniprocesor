@@ -28,9 +28,9 @@ Instruction Format
 
 An instruction is encoded as a binary sequence with the following structure:
 
-N (3 bits) – number of operations to execute (N = value + 1, max 8)
+N (3 bits) - number of operations to execute (N = value + 1, max 8)
 
-Op codes (2 × N bits) – operation codes:
+Op codes (2 × N bits) - operation codes:
 
 00 → +
 
@@ -40,6 +40,6 @@ Op codes (2 × N bits) – operation codes:
 
 11 → /
 
-Dim (4 bits) – operand size in bits (Dim = value + 1, range 1–16)
+Dim (4 bits) - operand size in bits (Dim = value + 1, range 1-16)
 
 The total instruction size fits within a 32-bit unsigned integer.
