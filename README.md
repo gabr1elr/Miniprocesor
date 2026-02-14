@@ -8,7 +8,7 @@ Features
 
 Instruction decoding from a 32-bit unsigned integer
 
-Support for basic arithmetic operations:
+Support for basic arithmetic operations: 
 
 Addition (+)
 
